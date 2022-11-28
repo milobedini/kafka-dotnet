@@ -4,6 +4,7 @@ using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
+
 var config = new ProducerConfig
 {
     BootstrapServers = "localhost:9092",

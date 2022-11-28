@@ -34,9 +34,9 @@ try
         }
     }
 }
-catch (Exception)
+catch (ProduceException<Null, string> exc)
 {
-
+    Console.WriteLine(exc.Message);
     throw;
 }
 
