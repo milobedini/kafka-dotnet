@@ -13,7 +13,9 @@ var config = new ConsumerConfig
 
 using var consumer = new ConsumerBuilder<Null, string>(config).Build();
 
-consumer.Subscribe("Users");
+string topic = "Users";
+
+consumer.Subscribe(topic);
 
 CancellationTokenSource token = new();
 
@@ -25,9 +27,10 @@ try
         var response = consumer.Consume(token.Token);
         if (response.Message != null)
         {
-            var userId = JsonConvert.DeserializeObject<User>
+            Console.WriteLine($"Read {response.Message.Value.Length} bytes from {topic}");
+            var userObj = JsonConvert.DeserializeObject<User>
             (response.Message.Value);
-            Console.WriteLine($"User ID: {userId}");
+            Console.WriteLine($"User ID: {userObj.UserId}");
         }
     }
 }
