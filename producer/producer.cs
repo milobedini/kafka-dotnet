@@ -1,53 +1,51 @@
 using System;
+using System.Threading;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
-class Producer
+var config = new ProducerConfig
 {
-    static void Main(string[] args)
+    BootstrapServers = "localhost:9092",
+};
+
+string topic = "Users";
+
+// Null as the key and string as the value
+using var producer = new ProducerBuilder<Null, string>(config).Build();
+
+// Just need to adapt consumer to act on a
+
+try
+{
+    // string? firstName;
+    // while ((firstName = Console.ReadLine()) != null)
+    // Enter name into the terminal, which will be serialised and produce a new user object with the inputted first name.
+
+
+    int objId = 0;
+    while (objId <= 10)
     {
-        if (args.Length != 1)
+
+        var response = await producer.ProduceAsync(topic,
+        new Message<Null, string>
         {
-            Console.WriteLine("Please provide the configuration file path as a command line argument");
+            Value = JsonConvert.SerializeObject(
+                new User(objId)
+            )
         }
-
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddIniFile(args[0])
-            .Build();
-
-        const string topic = "purchases";
-
-        string[] users = { "eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther" };
-        string[] items = { "book", "alarm clock", "t-shirts", "gift card", "batteries" };
-
-        using (var producer = new ProducerBuilder<string, string>(
-            configuration.AsEnumerable()).Build())
-        {
-            var numProduced = 0;
-            Random rnd = new Random();
-            const int numMessages = 10;
-            for (int i = 0; i < numMessages; ++i)
-            {
-                var user = users[rnd.Next(users.Length)];
-                var item = items[rnd.Next(items.Length)];
-
-                producer.Produce(topic, new Message<string, string> { Key = user, Value = item },
-                    (deliveryReport) =>
-                    {
-                        if (deliveryReport.Error.Code != ErrorCode.NoError)
-                        {
-                            Console.WriteLine($"Failed to deliver message: {deliveryReport.Error.Reason}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Produced event to topic {topic}: key = {user,-10} value = {item}");
-                            numProduced += 1;
-                        }
-                    });
-            }
-
-            producer.Flush(TimeSpan.FromSeconds(10));
-            Console.WriteLine($"{numProduced} messages were produced to topic {topic}");
-        }
+        );
+        Console.WriteLine(response.Value);
+        Console.WriteLine($"Sent {response.Value.Length} bytes to {topic} with the User ID of {objId}");
+        Thread.Sleep(3000);
+        objId += 1;
     }
+
 }
+catch (ProduceException<Null, string> exc)
+{
+    Console.WriteLine(exc.Message);
+    throw;
+}
+
+public record User(int UserId);

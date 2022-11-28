@@ -2,53 +2,39 @@ using System;
 using System.Threading;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
-class Consumer
+var config = new ConsumerConfig
+{
+    GroupId = "test-group",
+    BootstrapServers = "localhost:9092",
+    AutoOffsetReset = AutoOffsetReset.Earliest,
+};
+
+using var consumer = new ConsumerBuilder<Null, string>(config).Build();
+
+consumer.Subscribe("Users");
+
+CancellationTokenSource token = new();
+
+try
 {
 
-    static void Main(string[] args)
+    while (true)
     {
-        if (args.Length != 1)
+        var response = consumer.Consume(token.Token);
+        if (response.Message != null)
         {
-            Console.WriteLine("Please provide the configuration file path as a command line argument");
-        }
-
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddIniFile(args[0])
-            .Build();
-
-        configuration["group.id"] = "kafka-dotnet-getting-started";
-        configuration["auto.offset.reset"] = "earliest";
-
-        const string topic = "purchases";
-
-        CancellationTokenSource cts = new CancellationTokenSource();
-        Console.CancelKeyPress += (_, e) =>
-        {
-            e.Cancel = true; // prevent the process from terminating.
-            cts.Cancel();
-        };
-
-        using (var consumer = new ConsumerBuilder<string, string>(
-            configuration.AsEnumerable()).Build())
-        {
-            consumer.Subscribe(topic);
-            try
-            {
-                while (true)
-                {
-                    var cr = consumer.Consume(cts.Token);
-                    Console.WriteLine($"Consumed event from topic {topic} with key {cr.Message.Key,-10} and value {cr.Message.Value}");
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // Ctrl-C was pressed.
-            }
-            finally
-            {
-                consumer.Close();
-            }
+            var userId = JsonConvert.DeserializeObject<User>
+            (response.Message.Value);
+            Console.WriteLine($"User ID: {userId}");
         }
     }
 }
+catch (Exception)
+{
+
+    throw;
+}
+
+public record User(int UserId);

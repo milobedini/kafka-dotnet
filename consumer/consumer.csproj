@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp6.0</TargetFramework>
-        <StartupObject>Consumer</StartupObject>
+        <!-- <StartupObject>Consumer</StartupObject> -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,6 +11,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="6.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     </ItemGroup>
 
 </Project>
