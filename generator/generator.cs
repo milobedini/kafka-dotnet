@@ -1,24 +1,26 @@
 using System;
 using System.Threading;
 using Confluent.Kafka;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 
+const string topic = "incoming";
+const string kafka_broker = "localhost:9092";
+
 var config = new ProducerConfig
 {
-    BootstrapServers = "localhost:9092",
+    BootstrapServers = kafka_broker,
+    SecurityProtocol = SecurityProtocol.Plaintext,
 };
-
-const string topic = "Users";
 
 using var producer = new ProducerBuilder<Null, string>(config).Build();
 
 try
 {
+    Console.WriteLine($"Start generator {kafka_broker}/{topic}");
 
     int objId = 0;
-    while (objId <= 10)
+    while (objId < 10)
     {
 
         var response = await producer.ProduceAsync(topic,
@@ -30,7 +32,7 @@ try
         }
         );
         Console.WriteLine($"Sent {response.Value.Length} bytes to {topic} with the User ID of {objId}");
-        Thread.Sleep(3000);
+        Thread.Sleep(10000);
         objId += 1;
     }
 
