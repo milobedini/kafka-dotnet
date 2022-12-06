@@ -7,17 +7,16 @@ Includes:
 - Enrichment service - Reads messages from incoming, enriches them and sends to outgoing.
 - Kafka - One node cluster.
 - Zookeeper (used by kafka).
+- Kafkdrop - a simple web UI to look at topics and messages.
 
 ### How do I get set up?
-
-Currently:
 
 ```
 
 $ docker-compose up -d
-$ cd generator && dotnet run generator.cs
-$ cd enrichment && dotnet run enrichment.cs
+$ docker-compose logs -f
 
+Open http://127.0.0.1:9000 to look at the topics.
 
 ```
 

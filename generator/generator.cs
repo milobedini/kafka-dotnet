@@ -5,11 +5,12 @@ using Newtonsoft.Json;
 
 
 const string topic = "incoming";
-const string kafka_broker = "localhost:9092";
+
+string kafkaBroker = Environment.GetEnvironmentVariable("KAFKA_BROKER");
 
 var config = new ProducerConfig
 {
-    BootstrapServers = kafka_broker,
+    BootstrapServers = kafkaBroker,
     SecurityProtocol = SecurityProtocol.Plaintext,
 };
 
@@ -17,7 +18,7 @@ using var producer = new ProducerBuilder<Null, string>(config).Build();
 
 try
 {
-    Console.WriteLine($"Start generator {kafka_broker}/{topic}");
+    Console.WriteLine($"Start generator {kafkaBroker}/{topic}");
 
     int objId = 0;
     while (objId < 10)

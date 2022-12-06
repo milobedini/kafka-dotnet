@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 
 const string incomingTopic = "incoming";
 const string outgoingTopic = "outgoing";
-const string kafkaBroker = "localhost:9092";
+
+string kafkaBroker = Environment.GetEnvironmentVariable("KAFKA_BROKER");
+
 
 var consumerConfig = new ConsumerConfig
 {
