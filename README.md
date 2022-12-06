@@ -20,9 +20,3 @@ Open http://127.0.0.1:9000 to look at the topics.
 
 ```
 
-This will be fully containerised in the near future, and a UI to view the topics will also be implemented.
-
-### Who do I talk to?
-
-- Repo owner milo.bedini@dae.mn
-- Any of the Daemon Frameworks team!
